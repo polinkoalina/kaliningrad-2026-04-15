@@ -238,31 +238,50 @@
     z-index:2;
   }
   .side-stops{
-    margin-top:16px;
-    padding-left:46px;
+    margin-top:18px;
     display:grid;
     grid-template-columns:repeat(3,1fr);
-    gap:12px;
+    gap:14px;
   }
   .side-stops .stop{
-    background:rgba(184,105,61,.07);
-    border:1px solid rgba(184,105,61,.18);
-    border-radius:3px;
-    padding:12px 16px;
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:4px;
+    overflow:hidden;
+    box-shadow:0 1px 2px rgba(26,33,56,.04), 0 10px 30px -22px rgba(26,33,56,.22);
+    display:flex; flex-direction:column;
+    transition:transform .4s ease, box-shadow .4s ease;
   }
-  .side-stops .stop .letter{
-    display:inline-block;
+  .side-stops .stop:hover{
+    transform:translateY(-2px);
+    box-shadow:0 1px 2px rgba(26,33,56,.04), 0 16px 36px -20px rgba(26,33,56,.3);
+  }
+  .side-stops .stop .photo{
+    aspect-ratio:4/3;
+    background-size:cover; background-position:center;
+    position:relative;
+  }
+  .side-stops .stop .photo::after{
+    content:""; position:absolute; inset:0;
+    background:linear-gradient(180deg,transparent 65%,rgba(26,33,56,.2));
+  }
+  .side-stops .stop .photo .letter{
+    position:absolute; top:10px; left:10px;
+    width:24px; height:24px; border-radius:50%;
+    background:var(--paper); color:var(--copper);
+    border:1.5px solid var(--copper);
+    display:flex; align-items:center; justify-content:center;
     font-family:'Cormorant Garamond',serif; font-weight:600; font-style:italic;
-    color:var(--copper); font-size:14px;
-    margin-right:6px;
+    font-size:13px; z-index:1;
   }
+  .side-stops .stop .body{padding:14px 16px 16px}
   .side-stops .stop .n{
     font-family:'Cormorant Garamond',serif; font-weight:600;
-    font-size:17px; color:var(--ink); line-height:1.2;
+    font-size:19px; color:var(--ink); line-height:1.2;
   }
   .side-stops .stop .d{
-    font-size:12px; color:var(--ink-2); opacity:.8;
-    margin-top:3px; line-height:1.35;
+    font-size:12.5px; color:var(--ink-2); opacity:.85;
+    margin-top:4px; line-height:1.4;
   }
 
   .event.flight .card, .event.hotel-arrival .card{
@@ -394,16 +413,25 @@
           <div class="label-row">Обзорная экскурсия по городу</div>
           <div class="side-stops">
             <div class="stop">
-              <div><span class="letter">a</span><span class="n">Амалиенау</span></div>
-              <div class="d">район немецких вилл и югендстиля начала XX века</div>
+              <div class="photo" style="background-image:url('images/amalienau.jpg')"><span class="letter">a</span></div>
+              <div class="body">
+                <div class="n">Амалиенау</div>
+                <div class="d">район немецких вилл и югендстиля начала XX века</div>
+              </div>
             </div>
             <div class="stop">
-              <div><span class="letter">b</span><span class="n">Парк Победы</span></div>
-              <div class="d">бывший Луизенваль — любимый парк королевы Луизы</div>
+              <div class="photo" style="background-image:url('images/pobedy.jpg')"><span class="letter">b</span></div>
+              <div class="body">
+                <div class="n">Парк Победы</div>
+                <div class="d">бывший Луизенваль — любимый парк королевы Луизы</div>
+              </div>
             </div>
             <div class="stop">
-              <div><span class="letter">c</span><span class="n">Королевские ворота</span></div>
-              <div class="d">неоготика 1850-х · три статуи прусских королей на фасаде</div>
+              <div class="photo" style="background-image:url('images/kings_gate.jpg')"><span class="letter">c</span></div>
+              <div class="body">
+                <div class="n">Королевские ворота</div>
+                <div class="d">неоготика 1850-х · три статуи прусских королей на фасаде</div>
+              </div>
             </div>
           </div>
         </div>
