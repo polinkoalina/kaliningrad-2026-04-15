@@ -355,6 +355,15 @@
     .event{grid-template-columns:70px 1fr; gap:22px}
     .event .time{font-size:19px; padding-right:26px}
     .event .pin{left:52px}
+    .side-stops{grid-template-columns:1fr; gap:12px}
+    .side-stops .stop{display:grid; grid-template-columns:120px 1fr; align-items:stretch}
+    .side-stops .stop .photo{aspect-ratio:unset; height:100%}
+    .side-stops .stop .body{padding:12px 14px}
+    .chapter{grid-template-columns:70px 1fr; gap:22px}
+    .chapter::after{left:48px}
+    .chapter .time{font-size:15px; padding-right:26px}
+    .chapter .label{font-size:18px}
+    .chapter .label-row::before{width:18px}
     section{padding:60px 0}
     .hero-inner{padding:100px 0 50px}
   }
@@ -560,11 +569,11 @@
     { n:'c', name:'Королевские ворота',   time:'обзорная',         coords:[54.7134,20.5272] },
   ];
 
-  const map = L.map('map', { scrollWheelZoom:false }).setView([54.72,20.52], 11);
+  const map = L.map('map', { scrollWheelZoom:false, attributionControl:false }).setView([54.72,20.52], 11);
+  L.control.attribution({prefix:false}).addAttribution('© OpenStreetMap').addTo(map);
 
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-    attribution: '© OpenStreetMap'
+    maxZoom: 19
   }).addTo(map);
 
   // Route line (rough order by time)
