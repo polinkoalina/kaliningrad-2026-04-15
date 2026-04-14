@@ -1,0 +1,503 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Калининград · 15 апреля 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+<style>
+  :root{
+    --ink:#1a2138;
+    --ink-2:#2a3454;
+    --paper:#f5efe4;
+    --paper-2:#ece2cf;
+    --copper:#b8693d;
+    --copper-2:#8b4a28;
+    --brick:#7a2e1f;
+    --gold:#c9a45c;
+    --line:rgba(26,33,56,.14);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:'Inter',-apple-system,system-ui,sans-serif;
+    background:var(--paper);
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+    line-height:1.55;
+  }
+  .serif{font-family:'Cormorant Garamond',Georgia,serif;font-weight:500;letter-spacing:.01em}
+
+  /* HERO */
+  .hero{
+    position:relative;
+    min-height:90vh;
+    display:flex;
+    align-items:flex-end;
+    overflow:hidden;
+    color:#fff;
+    isolation:isolate;
+  }
+  .hero::before{
+    content:"";
+    position:absolute; inset:0;
+    background:url("images/cityscape.jpg") center/cover no-repeat;
+    filter:saturate(.9) contrast(1.05);
+    transform:scale(1.05);
+    z-index:-2;
+  }
+  .hero::after{
+    content:"";
+    position:absolute; inset:0;
+    background:linear-gradient(180deg,rgba(26,33,56,.35) 0%,rgba(26,33,56,.55) 55%,rgba(26,33,56,.92) 100%);
+    z-index:-1;
+  }
+  .hero-inner{
+    width:min(1100px,92%);
+    margin:0 auto;
+    padding:120px 0 70px;
+  }
+  .kicker{
+    display:inline-flex; align-items:center; gap:10px;
+    font-size:12px; letter-spacing:.28em; text-transform:uppercase;
+    color:var(--gold); font-weight:500;
+    margin-bottom:20px;
+  }
+  .kicker .dot{width:6px;height:6px;border-radius:50%;background:var(--gold)}
+  .hero h1{
+    font-family:'Cormorant Garamond',serif;
+    font-weight:600;
+    font-size:clamp(54px,9vw,124px);
+    line-height:.95;
+    margin:0 0 18px;
+    letter-spacing:-.01em;
+  }
+  .hero h1 em{font-style:italic; color:var(--gold); font-weight:500}
+  .hero .date{
+    font-family:'Cormorant Garamond',serif;
+    font-size:clamp(22px,2.4vw,30px);
+    opacity:.92;
+    margin:0 0 8px;
+  }
+  .hero .meta{
+    font-size:13px; letter-spacing:.18em; text-transform:uppercase;
+    opacity:.72;
+  }
+  .hero .meta span + span::before{content:"·"; margin:0 12px; opacity:.5}
+
+  /* STATS STRIP */
+  .strip{
+    background:var(--ink);
+    color:var(--paper);
+    padding:28px 0;
+    border-top:1px solid rgba(201,164,92,.2);
+    border-bottom:1px solid rgba(201,164,92,.2);
+  }
+  .strip-inner{
+    width:min(1100px,92%); margin:0 auto;
+    display:grid; grid-template-columns:repeat(4,1fr); gap:24px;
+  }
+  .stat{display:flex; flex-direction:column; gap:4px}
+  .stat .n{font-family:'Cormorant Garamond',serif; font-size:42px; color:var(--gold); line-height:1}
+  .stat .l{font-size:11px; letter-spacing:.22em; text-transform:uppercase; opacity:.7}
+
+  /* SECTION */
+  section{padding:90px 0}
+  .wrap{width:min(1100px,92%); margin:0 auto}
+  .section-head{display:flex; align-items:baseline; gap:24px; margin-bottom:50px}
+  .section-head h2{
+    font-family:'Cormorant Garamond',serif; font-weight:600;
+    font-size:clamp(36px,5vw,56px); margin:0;
+    letter-spacing:-.01em;
+  }
+  .section-head .num{
+    font-family:'Cormorant Garamond',serif; font-style:italic;
+    color:var(--copper); font-size:20px;
+  }
+  .section-head .rule{flex:1; height:1px; background:var(--line)}
+
+  /* TIMELINE */
+  .timeline{position:relative; padding-left:0}
+  .timeline::before{
+    content:""; position:absolute; left:88px; top:12px; bottom:12px;
+    width:1px; background:linear-gradient(180deg,transparent 0, var(--copper) 8%, var(--copper) 92%, transparent 100%);
+  }
+  .event{
+    display:grid;
+    grid-template-columns:110px 1fr;
+    gap:40px;
+    margin-bottom:32px;
+    position:relative;
+  }
+  .event .time{
+    font-family:'Cormorant Garamond',serif;
+    font-size:24px;
+    color:var(--ink-2);
+    text-align:right;
+    padding-right:38px;
+    font-weight:500;
+    line-height:1.1;
+  }
+  .event .time small{display:block; font-size:13px; color:var(--copper); font-weight:500; letter-spacing:.12em; margin-top:4px}
+  .event .pin{
+    position:absolute; left:84px; top:10px;
+    width:9px; height:9px; border-radius:50%;
+    background:var(--paper); border:2px solid var(--copper);
+    box-shadow:0 0 0 4px var(--paper);
+    z-index:2;
+  }
+  .card{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:4px;
+    overflow:hidden;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    box-shadow:0 1px 2px rgba(26,33,56,.04), 0 12px 40px -20px rgba(26,33,56,.18);
+    transition:transform .5s ease, box-shadow .5s ease;
+  }
+  .card:hover{
+    transform:translateY(-2px);
+    box-shadow:0 1px 2px rgba(26,33,56,.04), 0 20px 50px -20px rgba(26,33,56,.28);
+  }
+  .card.no-img{grid-template-columns:1fr}
+  .card .photo{
+    aspect-ratio:4/3;
+    background-size:cover; background-position:center;
+    position:relative;
+  }
+  .card .photo::after{
+    content:""; position:absolute; inset:0;
+    background:linear-gradient(180deg,transparent 60%,rgba(26,33,56,.18));
+  }
+  .card .body{padding:28px 30px}
+  .card .tag{
+    display:inline-block;
+    font-size:10px; letter-spacing:.22em; text-transform:uppercase;
+    color:var(--copper); font-weight:600; margin-bottom:10px;
+  }
+  .card h3{
+    font-family:'Cormorant Garamond',serif; font-weight:600;
+    font-size:28px; margin:0 0 10px; line-height:1.15; letter-spacing:-.01em;
+  }
+  .card p{margin:0 0 10px; color:var(--ink-2); font-size:14.5px}
+  .card .addr{
+    font-size:12px; letter-spacing:.06em;
+    color:var(--ink-2); opacity:.75;
+    border-top:1px dashed var(--line);
+    margin-top:14px; padding-top:12px;
+  }
+  .card .addr::before{content:"◇  "; color:var(--copper); font-size:10px}
+  .card .link{
+    display:inline-flex; align-items:center; gap:6px;
+    margin-top:14px;
+    font-size:12px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--copper); text-decoration:none; font-weight:600;
+    border-bottom:1px solid transparent; padding-bottom:2px;
+    transition:border-color .2s, gap .2s;
+  }
+  .card .link:hover{border-color:var(--copper); gap:10px}
+  .card .link::after{content:"→"; font-size:14px}
+  .event.flight .card .link, .event.hotel-arrival .card .link{color:var(--gold)}
+  .event.flight .card .link:hover, .event.hotel-arrival .card .link:hover{border-color:var(--gold)}
+
+  /* Chapter divider inside timeline */
+  .chapter{
+    display:grid;
+    grid-template-columns:110px 1fr;
+    gap:40px;
+    margin:12px 0 28px;
+    position:relative;
+  }
+  .chapter .time{
+    font-family:'Cormorant Garamond',serif;
+    font-size:18px; color:var(--copper);
+    text-align:right; padding-right:38px;
+    font-weight:500; line-height:1.1;
+    font-style:italic;
+  }
+  .chapter .label{
+    display:flex; align-items:center; gap:18px;
+    font-family:'Cormorant Garamond',serif;
+    font-size:22px; color:var(--ink); font-style:italic;
+    letter-spacing:.01em;
+  }
+  .chapter .label::before{
+    content:""; width:28px; height:1px; background:var(--copper);
+  }
+  .chapter::after{
+    content:""; position:absolute; left:82px; top:11px;
+    width:13px; height:13px; border-radius:50%;
+    background:var(--copper); border:2px solid var(--paper);
+    box-shadow:0 0 0 4px var(--paper);
+    z-index:2;
+  }
+
+  .event.flight .card, .event.hotel-arrival .card{
+    background:var(--ink); color:var(--paper);
+    border-color:transparent;
+  }
+  .event.flight .card p, .event.hotel-arrival .card p{color:rgba(245,239,228,.8)}
+  .event.flight .card h3, .event.hotel-arrival .card h3{color:var(--paper)}
+  .event.flight .card .tag, .event.hotel-arrival .card .tag{color:var(--gold)}
+  .event.flight .card .addr, .event.hotel-arrival .card .addr{border-color:rgba(201,164,92,.25); color:rgba(245,239,228,.6)}
+
+  /* MAP SECTION */
+  .map-section{background:var(--paper-2); padding:90px 0}
+  #map{
+    height:560px; width:100%;
+    border-radius:6px;
+    border:1px solid var(--line);
+    box-shadow:0 20px 60px -30px rgba(26,33,56,.35);
+  }
+  .legend{
+    display:flex; flex-wrap:wrap; gap:12px 20px;
+    margin-top:28px;
+    font-size:13px; color:var(--ink-2);
+  }
+  .legend span{display:inline-flex; align-items:center; gap:8px}
+  .legend .num{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:24px; height:24px; border-radius:50%;
+    background:var(--copper); color:#fff;
+    font-family:'Cormorant Garamond',serif; font-weight:600; font-size:14px;
+  }
+
+  /* Leaflet custom pin */
+  .pin-marker{
+    width:34px; height:34px; border-radius:50%;
+    background:var(--copper); color:#fff;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Cormorant Garamond',serif; font-weight:600; font-size:17px;
+    border:3px solid #fff;
+    box-shadow:0 4px 14px rgba(26,33,56,.35);
+    transition:transform .2s;
+  }
+  .pin-marker:hover{transform:scale(1.12)}
+  .pin-marker.start{background:var(--ink)}
+  .pin-marker.end{background:var(--brick)}
+  .leaflet-popup-content-wrapper{border-radius:4px; font-family:'Inter',sans-serif}
+  .leaflet-popup-content{margin:14px 16px; font-size:13px}
+  .leaflet-popup-content b{font-family:'Cormorant Garamond',serif; font-size:16px; font-weight:600; display:block; margin-bottom:2px}
+
+  /* FOOTER */
+  footer{
+    background:var(--ink); color:rgba(245,239,228,.75);
+    padding:50px 0; text-align:center;
+    font-size:13px; letter-spacing:.08em;
+  }
+  footer .sig{
+    font-family:'Cormorant Garamond',serif; font-style:italic;
+    font-size:22px; color:var(--gold); margin-bottom:10px;
+    letter-spacing:0;
+  }
+
+  @media (max-width:820px){
+    .strip-inner{grid-template-columns:repeat(2,1fr); gap:20px}
+    .card{grid-template-columns:1fr}
+    .timeline::before{left:56px}
+    .event{grid-template-columns:70px 1fr; gap:22px}
+    .event .time{font-size:19px; padding-right:26px}
+    .event .pin{left:52px}
+    section{padding:60px 0}
+    .hero-inner{padding:100px 0 50px}
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="kicker"><span class="dot"></span>Один день · программа поездки</div>
+    <h1>Königs<em>berg</em><br>Калининград</h1>
+    <p class="date">Среда, 15 апреля 2026</p>
+    <p class="meta">
+      <span>Аэрофлот · 10:35</span>
+      <span>6 точек маршрута</span>
+      <span>Финал в «Европе»</span>
+    </p>
+  </div>
+</header>
+
+<div class="strip">
+  <div class="strip-inner">
+    <div class="stat"><div class="n">10:35</div><div class="l">прилёт</div></div>
+    <div class="stat"><div class="n">6</div><div class="l">остановок</div></div>
+    <div class="stat"><div class="n">2</div><div class="l">музея</div></div>
+    <div class="stat"><div class="n">1 форт</div><div class="l">XIX века</div></div>
+  </div>
+</div>
+
+<section>
+  <div class="wrap">
+    <div class="section-head">
+      <span class="num">01</span>
+      <h2>Программа дня</h2>
+      <div class="rule"></div>
+    </div>
+
+    <div class="timeline">
+
+      <div class="event flight">
+        <div class="time">10:35<small>прилёт</small></div>
+        <span class="pin"></span>
+        <div class="card no-img">
+          <div class="body">
+            <span class="tag">Аэропорт Храброво · Аэрофлот</span>
+            <h3>Приземление</h3>
+            <p>Рейс Аэрофлота садится в Храброво. В 11:00 — выход из аэропорта, старт программы.</p>
+            <div class="addr">ул. Аэропортная, Храброво · 24 км от города</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="chapter">
+        <div class="time">11:00–14:00</div>
+        <div class="label">Обзорная экскурсия по городу</div>
+      </div>
+
+      <div class="event">
+        <div class="time">12:00<small>музей</small></div>
+        <span class="pin"></span>
+        <div class="card">
+          <div class="photo" style="background-image:url('images/friedland.jpg')"></div>
+          <div class="body">
+            <span class="tag">Неоготика 1862 года · 6 залов</span>
+            <h3>Фридландские ворота</h3>
+            <p>Красный кирпич, башенки, двускатные крыши. Внутри — история Кёнигсберга от Тевтонского ордена до первых советских переселенцев: аптечные склянки, швейные машинки, вензеля на чашках.</p>
+            <div class="addr">ул. Дзержинского, 30 · Парк Южный</div>
+            <a class="link" href="https://fvmuseum.ru/" target="_blank" rel="noopener">сайт музея</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="event">
+        <div class="time">13:30<small>музей</small></div>
+        <span class="pin"></span>
+        <div class="card">
+          <div class="photo" style="background-image:url('images/brandenburg.jpg')"></div>
+          <div class="body">
+            <span class="tag">Бранденбургские ворота · вход свободный</span>
+            <h3>Музей марципана</h3>
+            <p>Единственные работающие по назначению ворота Кёнигсберга — через них ходит транспорт. А внутри — марципановые копии памятников, старинные формы, металлические упаковки и марципан на пробу.</p>
+            <div class="addr">ул. Багратиона, 137</div>
+            <a class="link" href="https://www.marzipanmuseum.ru/" target="_blank" rel="noopener">сайт музея</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="event">
+        <div class="time">14:15<small>–15:00</small></div>
+        <span class="pin"></span>
+        <div class="card">
+          <div class="photo" style="background-image:url('images/mushkino.jpg')"></div>
+          <div class="body">
+            <span class="tag">Обед · европейская и авторская</span>
+            <h3>Ресторан «Мушкино»</h3>
+            <p>Нарядный ресторан в белых и зелёных оттенках, панорамные окна в пол. Фирменная тема — оленина: стейки, пельмени, похлёбка (оленей разводят на одноимённом агроместе в области).</p>
+            <div class="addr">ул. Сергеева, 14</div>
+            <a class="link" href="https://restmushkino.ru/" target="_blank" rel="noopener">сайт ресторана</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="event">
+        <div class="time">16:00<small>форт</small></div>
+        <span class="pin"></span>
+        <div class="card">
+          <div class="photo" style="background-image:url('images/fort11.jpg')"></div>
+          <div class="body">
+            <span class="tag">1877–1881 · лучше всех сохранился</span>
+            <h3>Форт XI «Дёнхофф»</h3>
+            <p>Один из 12 фортов крепости Кёнигсберг. Весной 1945-го сдался практически без боя — благодаря этому сохранилась вся архитектура. 70 лет был закрытым объектом Минобороны, сейчас открыт для экскурсий.</p>
+            <div class="addr">ул. Энергетиков, 12</div>
+            <a class="link" href="https://fortdonhoff.ru/" target="_blank" rel="noopener">сайт форта</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="event hotel-arrival">
+        <div class="time">18:00<small>отель</small></div>
+        <span class="pin"></span>
+        <div class="card">
+          <div class="photo" style="background-image:url('images/hotel.jpg')"></div>
+          <div class="body">
+            <span class="tag">Заселение · конец программы</span>
+            <h3>Отель «Европа»</h3>
+            <p>В центре города, в 10 минутах от острова Канта и Кафедрального собора. Примыкает к одноимённому ТЦ — под боком магазины, кафе, банки.</p>
+            <div class="addr">ул. Театральная, 30 · центр</div>
+            <a class="link" href="https://www.hoteleuropa.ru/" target="_blank" rel="noopener">сайт отеля</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section class="map-section">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="num">02</span>
+      <h2>Карта маршрута</h2>
+      <div class="rule"></div>
+    </div>
+    <div id="map"></div>
+    <div class="legend">
+      <span><span class="num" style="background:var(--ink)">0</span> Аэропорт Храброво</span>
+      <span><span class="num">1</span> Фридландские ворота</span>
+      <span><span class="num">2</span> Музей марципана</span>
+      <span><span class="num">3</span> Ресторан «Мушкино»</span>
+      <span><span class="num">4</span> Форт XI Дёнхофф</span>
+      <span><span class="num" style="background:var(--brick)">5</span> Отель «Европа»</span>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="sig">Gute Reise, Kaliningrad</div>
+  <div>15.04.2026 · одностраничный гид</div>
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+  const points = [
+    { n:'0', name:'Аэропорт Храброво',      time:'10:35 · прилёт',    coords:[54.8898,20.5926], cls:'start' },
+    { n:'1', name:'Фридландские ворота',    time:'12:00 · музей',     coords:[54.6925,20.5224] },
+    { n:'2', name:'Музей марципана',        time:'13:30 · Бранденбургские ворота', coords:[54.6870,20.4931] },
+    { n:'3', name:'Ресторан «Мушкино»',     time:'14:15 · обед',      coords:[54.7141,20.4828] },
+    { n:'4', name:'Форт XI «Дёнхофф»',      time:'16:00 · форт',      coords:[54.6391,20.5958] },
+    { n:'5', name:'Отель «Европа»',         time:'18:00 · заселение', coords:[54.7139,20.5110], cls:'end' },
+  ];
+
+  const map = L.map('map', { scrollWheelZoom:false }).setView([54.72,20.52], 11);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '© OpenStreetMap'
+  }).addTo(map);
+
+  // Route line (rough order by time)
+  const line = L.polyline(points.map(p=>p.coords), {
+    color:'#b8693d', weight:3, opacity:.55, dashArray:'6 8'
+  }).addTo(map);
+
+  points.forEach(p=>{
+    const icon = L.divIcon({
+      className:'',
+      html:`<div class="pin-marker ${p.cls||''}">${p.n}</div>`,
+      iconSize:[34,34], iconAnchor:[17,17]
+    });
+    L.marker(p.coords,{icon}).addTo(map)
+      .bindPopup(`<b>${p.name}</b>${p.time}`);
+  });
+
+  map.fitBounds(line.getBounds().pad(0.15));
+
+  map.once('click', ()=> map.scrollWheelZoom.enable());
+</script>
+</body>
+</html>
