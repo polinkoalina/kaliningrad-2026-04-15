@@ -249,9 +249,10 @@
     overflow:hidden;
     box-shadow:0 1px 2px rgba(26,33,56,.04), 0 10px 30px -22px rgba(26,33,56,.22);
     display:grid;
-    grid-template-columns:1fr 1fr;
+    grid-template-columns:220px 1fr;
     transition:transform .4s ease, box-shadow .4s ease;
   }
+  .side-stops .stop .photo{aspect-ratio:unset}
   .side-stops .stop:hover{
     transform:translateY(-2px);
     box-shadow:0 1px 2px rgba(26,33,56,.04), 0 16px 36px -20px rgba(26,33,56,.3);
@@ -274,7 +275,7 @@
     font-family:'Cormorant Garamond',serif; font-weight:600; font-style:italic;
     font-size:14px; z-index:1;
   }
-  .side-stops .stop .body{padding:22px 26px; display:flex; flex-direction:column; justify-content:center}
+  .side-stops .stop .body{padding:18px 22px; display:flex; flex-direction:column; justify-content:center}
   .side-stops .stop .tag{
     display:inline-block;
     font-size:10px; letter-spacing:.22em; text-transform:uppercase;
@@ -282,7 +283,7 @@
   }
   .side-stops .stop .n{
     font-family:'Cormorant Garamond',serif; font-weight:600;
-    font-size:24px; color:var(--ink); line-height:1.2;
+    font-size:21px; color:var(--ink); line-height:1.2;
   }
   .side-stops .stop .d{
     font-size:13.5px; color:var(--ink-2);
@@ -361,6 +362,7 @@
     .event .time{font-size:19px; padding-right:26px}
     .event .pin{left:52px}
     .side-stops .stop{grid-template-columns:1fr}
+    .side-stops .stop .photo{aspect-ratio:4/3}
     .side-stops .stop .body{padding:18px 20px}
     .side-stops .stop .n{font-size:22px}
     .chapter{grid-template-columns:70px 1fr; gap:22px}
